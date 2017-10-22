@@ -9,8 +9,8 @@
 #define SRC_DH_H_
 
 #include "mensajes.h"
-#include "vendor/tinyxml/tinyxml.h"
 #include <vector>
+#include "robot/robot.h"
 
 TiXmlNode * getElementByName(TiXmlNode * base, const char * nombre);
 std::vector<TiXmlNode *> getElementsByTagName(TiXmlNode * base, const char * nombre);

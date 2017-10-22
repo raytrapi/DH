@@ -18,8 +18,8 @@ add_subdirectory(src/vendor)
 add_definitions(${Qt5Core_DEFINITIONS})
 
 
-
+file(GLOB ROBOT src/robot/*.cpp src/extras/*.cpp)
 #add_definitions(${Qt5Core_DEFINITIONS})
-add_executable(dh src/DH.cc )
+add_executable(dh src/DH.cc ${ROBOT})
 target_link_libraries( dh  ${Qt5Widgets_LIBRARIES})
 target_link_libraries(dh tinyxml)
