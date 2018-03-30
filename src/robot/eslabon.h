@@ -15,9 +15,9 @@ namespace DH {
 		class Union;
 		class Eslabon {
 			private:
-				TiXmlNode * eslabon; //Contiene la información del eslabon
-				Union * hijo; //Unión con el eslabón hijo
-				Union * padre; //Unión con el eslabón Padre
+				TiXmlNode * eslabon; //Contiene la informaciï¿½n del eslabon
+				Union * hijo; //Uniï¿½n con el eslabï¿½n hijo
+				Union * padre; //Uniï¿½n con el eslabï¿½n Padre
 			public:
 				Eslabon(TiXmlNode *);
 				virtual ~Eslabon();
@@ -28,6 +28,7 @@ namespace DH {
 				//Modificadores
 				void setPadre(Union *&);
 				void setHijo(Union *&);
+				void desenlazarHijo();
 
 		};
 

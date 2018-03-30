@@ -26,31 +26,36 @@ namespace DH {
 		Union::~Union() {
 			// TODO Auto-generated destructor stub
 		}
-		Eslabon* DH::robot::Union::getHijo(){
+		Eslabon* Union::getHijo(){
 			return hijo;
 		}
 
-		void DH::robot::Union::setHijo(Eslabon* &hijo){
+		void Union::setHijo(Eslabon* &hijo){
 			this->hijo = hijo;
 		}
 
-		TiXmlNode* DH::robot::Union::getNodo(){
+		TiXmlNode* Union::getNodo(){
 			return nodo;
 		}
 
-		 Eslabon* DH::robot::Union::getPadre(){
+		 Eslabon* Union::getPadre(){
 			return padre;
 		}
 
-		void DH::robot::Union::setPadre(Eslabon* &padre){
+		void Union::setPadre(Eslabon* &padre){
 			this->padre = padre;
 		}
 
-		Tipo DH::robot::Union::getTipo(){
+		TipoUnion Union::getTipo(){
 			return tipo;
 		}
+		void Union::desenlazarHijo() {
+			hijo->desenlazarHijo();
+			delete hijo;
+			hijo=NULL;
+		}
+
 
 	} /* namespace robot */
 } /* namespace DH */
-
 

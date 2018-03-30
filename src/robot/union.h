@@ -13,13 +13,14 @@
 namespace DH {
 	namespace robot {
 		class Eslabon;
-		enum Tipo {REVOLUCION, PRISMATICO};
+		enum TipoUnion {REVOLUCION, PRISMATICO};
 		class Union {
 			private:
 				TiXmlNode * nodo;
 				Eslabon * padre;
 				Eslabon * hijo;
-				Tipo tipo;
+				TipoUnion tipo;
+				
 			public:
 				Union(TiXmlNode *,const char*);
 				virtual ~Union();
@@ -28,7 +29,11 @@ namespace DH {
 				TiXmlNode* getNodo() ;
 				Eslabon* getPadre() ;
 				void setPadre( Eslabon* &padre);
-				Tipo getTipo() ;
+				TipoUnion getTipo() ;
+				void desenlazarHijo();
+				int eje; //0=x, 1=y, 2=z
+				bool giroAntihoraria=false; 
+				bool direccionPositiva=true;
 		};
 
 	} /* namespace robot */

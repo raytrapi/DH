@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.0.0)
 project(DH)
 
 
-
+#set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Oi")
 set(CMAKE_AUTOMOC ON)
 find_package(Qt5Core REQUIRED)
 find_package( Qt5Widgets )
@@ -20,6 +20,6 @@ add_definitions(${Qt5Core_DEFINITIONS})
 
 file(GLOB ROBOT src/robot/*.cpp src/extras/*.cpp)
 #add_definitions(${Qt5Core_DEFINITIONS})
-add_executable(dh src/DH.cc ${ROBOT})
+add_executable(dh src/main.cpp ${ROBOT})
 target_link_libraries( dh  ${Qt5Widgets_LIBRARIES})
 target_link_libraries(dh tinyxml)

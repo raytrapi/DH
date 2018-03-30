@@ -36,8 +36,12 @@ namespace DH {
 		void Eslabon::setHijo(Union*& hijo) {
 			this->hijo=hijo;
 		}
-		TiXmlNode* DH::robot::Eslabon::getEslabon() {
+		TiXmlNode* Eslabon::getEslabon() {
 			return eslabon;
+		}
+		void Eslabon::desenlazarHijo() {
+			delete hijo;
+			hijo=NULL;
 		}
 
 	} /* namespace robot */

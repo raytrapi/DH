@@ -14,7 +14,11 @@
 #include "../vendor/tinyxml/tinyxml.h"
 #include "eslabon.h"
 #include "union.h"
+#include "DenavitHartenberg.h"
+#include "cadenaCinematica.h"
+#include "../extras/utiles.h"
 #include <vector>
+#include <array> 
 #include <map>
 
 

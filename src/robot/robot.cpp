@@ -11,7 +11,7 @@ namespace DH{
 		/**
 		 * Constructor
 		 * @param fichero Fichero XML en formato sdf
-		 * @param modeloRobot Nombre del modelo que contendr· la extructura del robot
+		 * @param modeloRobot Nombre del modelo que contendr√° la extructura del robot
 		 * @param mano Link que representa la pinza o extremo del robot
 		 *
 		 */
@@ -26,14 +26,14 @@ namespace DH{
 		/**
 		 * Carga un fichero en formato sdf para componer el robot
 		 * @param fichero Fichero XML en formato sdf
-		 * @param modeloRobot Nombre del modelo que contendr· la extructura del robot
+		 * @param modeloRobot Nombre del modelo que contendr√° la extructura del robot
 		 * @param mano Link que representa la pinza o extremo del robot
 		 *
 		 */
 		void Robot::load(char * fichero, char * modeloRobot, char * mano){
 			TiXmlDocument d;
 			if(d.LoadFile(fichero)){
-				DH::Mensajes::log("Buscamos el modelo ["+  DH::Mensajes::str(modeloRobot) +"]");
+				Mensajes::log("Buscamos el modelo ["+  Mensajes::str(modeloRobot) +"]");
 				//Tenemos el fichero SDF
 				//Obtenemos el modelo a analizar
 				TiXmlElement* modelo= NULL;//d.FirstChildElement(argv[2]);
@@ -49,81 +49,84 @@ namespace DH{
 					actual=actual->NextSibling();
 				}
 				if(modelo){
-					DH::Mensajes::log("Procesando robot ["+  DH::Mensajes::str(modeloRobot)+"]");
+					Mensajes::log("Procesando robot ["+ Mensajes::str(modeloRobot)+"]");
 					//busco los link
 					std::vector<TiXmlNode *> links=xml::XML::getElementsByTagName(modelo, "link");
 					std::vector<TiXmlNode *> uniones=xml::XML::getElementsByTagName(modelo, "joint");
 
 					mapElementos eslabones;
+					Union * laMano=NULL;
 					//Procesamos las uniones
 					for(int i=0;i<uniones.size();i++){
-						//La uniÛn tendr· varios valores a obtener entre los que destacan:
-						// - El tipo de uniÛn.
+						//La uni√≥n tendr√° varios valores a obtener entre los que destacan:
+						// - El tipo de uni√≥n.
 						// - El padre y el hijo.
 						// - El eje sobre el que se aplica.
-						//TODO: øQue ocurre si es m·s de un eje?
+						//TODO: ¬øQue ocurre si es m√°s de un eje?
 						TiXmlNode * nodo=uniones[i];
 						const char * tipo=nodo->ToElement()->Attribute("type"); //Tipo
 						TiXmlNode * nodoPadre=xml::XML::getFirstElementByTagName(nodo,"parent");
 						TiXmlNode * nodoHijo=xml::XML::getFirstElementByTagName(nodo,"child");
-						//Lo mejor, en cuanto a eficiencia, serÌa tener un diccionario que permitiese la b˙squeda por el nombre del nodo.
-						//A˙n asÌ, y debido a que es un proceso que no tiene que ser r·pido, lo podemos hacer comprobando cada uno de los eslabones
+						//Lo mejor, en cuanto a eficiencia, ser√≠a tener un diccionario que permitiese la b√∫squeda por el nombre del nodo.
+						//A√∫n as√≠, y debido a que es un proceso que no tiene que ser r√°pido, lo podemos hacer comprobando cada uno de los eslabones
 						const char * nombrePadre=nodoPadre->ToElement()->GetText();
 						const char * nombreHijo=nodoHijo->ToElement()->GetText();
-						if(strcmp(nombrePadre,mano)!=0 ){ //No aseguramos que la uniÛn no tiene como padre la mano
-							//Es un candidato.
-							Union * nodoUnion=new Union(nodo, tipo);
-							//Buscamos el eslabon padre;
-							Eslabon * eslabonPadre=buscarEslabon(eslabones,nombrePadre);
-							if(eslabonPadre==NULL){
-								//Como es nulo lo creamos
-								// Pero antes buscamos el link
-								eslabonPadre=new Eslabon(buscarEslabonSDF(links,nombrePadre));
-								eslabones[nombrePadre]=eslabonPadre;
-							}
-							eslabonPadre->setHijo(nodoUnion);
-							nodoUnion->setPadre(eslabonPadre);
 
-							Eslabon * eslabonHijo=buscarEslabon(eslabones,nombreHijo);
-							if(eslabonHijo==NULL){
-								//Como es nulo lo creamos
-								eslabonHijo=new Eslabon(buscarEslabonSDF(links,nombreHijo));
-								eslabones[nombreHijo]=eslabonHijo;
-							}
-							eslabonHijo->setPadre(nodoUnion);
-							nodoUnion->setHijo(eslabonHijo);/**/
-							//Mensajes::log("Tipo: "+Mensajes::str(nodoPadre->ToElement()->GetText()));
+						//Es un candidato.
+						Union * nodoUnion=new Union(nodo, tipo);
+						//Buscamos el eslabon padre;
+						Eslabon * eslabonPadre=buscarEslabon(eslabones,nombrePadre);
+						if(eslabonPadre==NULL){
+							//Como es nulo lo creamos
+							// Pero antes buscamos el link
+							eslabonPadre=new Eslabon(buscarEslabonSDF(links,nombrePadre));
+							eslabones[nombrePadre]=eslabonPadre;
 						}
-					}
-					//Ahora recorremos los elementos en busca de la raÌz.
-					int i=0;
-					for(mapElementos::iterator itr=eslabones.begin();itr!=eslabones.end();itr++){
-						if(itr->second->getPadre()==NULL){
-							raiz=itr->second;
-						}else{
-							if(raiz==NULL){
-								raiz=itr->second;
-							}
+						eslabonPadre->setHijo(nodoUnion);
+						nodoUnion->setPadre(eslabonPadre);
+
+						Eslabon * eslabonHijo=buscarEslabon(eslabones,nombreHijo);
+						if(eslabonHijo==NULL){
+							//Como es nulo lo creamos
+							eslabonHijo=new Eslabon(buscarEslabonSDF(links,nombreHijo));
+							eslabones[nombreHijo]=eslabonHijo;
 						}
-					}
-					Mensajes::log("La cadena cinem·tica es:\r\n");
-					Eslabon* elementoActual=raiz;
-					int nivel=0;
-					while(elementoActual!=NULL && nivel<100){
-						for(int i=0;i<nivel;i++){
-							std::cout<<"\t";
-						}
-						Mensajes::log(Mensajes::str(elementoActual->getEslabon()->ToElement()->Attribute("name")));
-						nivel++;
-						if(elementoActual->getHijo()!=NULL){
-							elementoActual=elementoActual->getHijo()->getHijo();
-						}else{
-							elementoActual=NULL;
+						eslabonHijo->setPadre(nodoUnion);
+						nodoUnion->setHijo(eslabonHijo);/**/
+						//Mensajes::log("Tipo: "+Mensajes::str(nodoPadre->ToElement()->GetText()));
+						if(strcmp(nombrePadre,mano)==0 ){ //Nos aseguramos que la uni√≥n no tiene como padre la mano}else{
+							laMano=nodoUnion;
 						}
 					}
 
+					// Si tenemos mano, es que la hemos encontrado
+					if(laMano!=NULL){
+						//Para evitar que la cadena continue eliminamos a los hijos
+						if(laMano->getHijo()!=NULL){
+							laMano->desenlazarHijo();
 
-					DH::Mensajes::log("\r\nHay  "+std::to_string(eslabones.size())+" eslabones y "+std::to_string(eslabones.size()-1)+" grados de libertad");
+						}
+						//Cogemos la raiz
+						raiz=laMano->getPadre();
+						while(raiz->getPadre()!=NULL){
+							raiz=raiz->getPadre()->getPadre();
+						}
+					}
+
+					Mensajes::log("La cadena cinem√°tica es:\r\n");
+					std::vector<Eslabon *> cadenaCinematica=CadenaCinematica::obtenerCadena(raiz);
+					
+					//Ahora procesamos las uniones
+					std::vector<std::array<std::string,4>> matriz=DenavitHartenberg::procesarCadena(cadenaCinematica);
+					for(int i=0;i<matriz.size();i++){
+						std::string fila=""+std::to_string (i+1);
+						for(int k=0;k<4;k++){
+							fila+="\t\t"+matriz[i][k];
+						}
+						Mensajes::log(fila);
+					}
+
+					Mensajes::log("\r\nHay  "+std::to_string(cadenaCinematica.size())+" eslabones y "+std::to_string(cadenaCinematica.size()-1)+" grados de libertad");
 
 				}else{
 					std::stringstream mensaje;
@@ -137,7 +140,7 @@ namespace DH{
 		/**
 		 * Busca un nodo dentro de un vector de nodos
 		 *
-		 * @param nodos Es el vector de nodos en el que se buscar· por el atributo name
+		 * @param nodos Es el vector de nodos en el que se buscar√° por el atributo name
 		 * @param nombre El nombre del nodo a buscar
 		 *
 		 * @return El nodo encontrado o null si no se ha encontrado el nodo
@@ -153,7 +156,7 @@ namespace DH{
 		/**
 		 * Busca un nodo dentro de un vector de nodos
 		 *
-		 * @param nodos Es el vector de nodos en el que se buscar· por el atributo name
+		 * @param nodos Es el vector de nodos en el que se buscar√° por el atributo name
 		 * @param nombre El nombre del nodo a buscar
 		 *
 		 * @return El nodo encontrado o null si no se ha encontrado el nodo
